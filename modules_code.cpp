@@ -1,238 +1,200 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include "modules.h"
 
-struct Gaming {
-	char* _director;
+Movie::Movie() {
+	this->_name = "";
 };
 
-void GamingInput(Gaming& _gaming, std::ifstream &_inputStream) {
-	std::string _inputData = "";
-	_inputStream >> _inputData;
-	_gaming._director = new char[_inputData.size()+1];
-	strcpy(_gaming._director, _inputData.c_str());
-	return;
+Movie::~Movie() {
 };
 
-void GamingOutput(Gaming& _gaming, std::ofstream &_outputStream) {
-	unsigned int _sizeStr = strlen(_gaming._director);
-	_outputStream << "and his director is ";
-	for (unsigned int i = 0; i < _sizeStr; i++) {
-		_outputStream << _gaming._director[i];
-	};
-	return;
+Movie* Movie::MovieIn(std::ifstream& _inputStream) {
+	Movie* _tempMovie;
+	std::string _tempString = "";
+	_inputStream >> _tempString;
+	if (_tempString == "CARTOON") 
+		_tempMovie = new Cartoon();
+	else if (_tempString == "GAMING") 
+		_tempMovie = new Gaming();
+	else
+		return NULL;
+	_tempMovie->input(_inputStream);
+	return _tempMovie;
 };
 
-
-
-enum typeOfCartoon {
-	anime,
-	animation,
-	puppets,
-	plasticine,
-	sandy
-};
-
-struct Cartoon {
-	typeOfCartoon _creationMethod;
-};
-
-void CartoonInput(Cartoon& _cartoon, std::ifstream &_inputStream) {
-	std::string _inputData = "";
-	_inputStream >> _inputData;
-	if (_inputData == "anime")
-		_cartoon._creationMethod = anime;
-	else if (_inputData == "animation")
-		_cartoon._creationMethod = animation;
-	else if (_inputData == "puppets")
-		_cartoon._creationMethod = puppets;
-	else if (_inputData == "plasticine")
-		_cartoon._creationMethod = plasticine;
-	else if (_inputData == "sandy")
-		_cartoon._creationMethod = sandy;
-	return;
-};
-
-void CartoonOutput(Cartoon& _cartoon, std::ofstream &_outputStream) {
-	_outputStream << "and this creation method are ";
-	switch (_cartoon._creationMethod) {
-	case anime: {
-		_outputStream << "anime";
-		break;
-	};
-	case animation: {
-		_outputStream << "animation";
-		break;
-	};
-	case puppets: {
-		_outputStream << "puppets";
-		break;
-	};
-	case plasticine: {
-		_outputStream << "plasticine";
-		break;
-	};
-	case sandy: {
-		_outputStream << "sandy";
-		break;
-	};
-	};
-	return;
-};
-
-
-
-enum _keyType {
-	GAMING,
-	CARTOON
-};
-
-struct Movie {
-	std::string _name;
-	_keyType _key;
-	union {
-		Gaming _gamingMovie;
-		Cartoon _cartoonMovie;
-	};
-};
-
-Movie* MovieInput(std::ifstream& _inputStream) {
-	Movie* _movie;
-	std::string _typeString = "";
-	_inputStream >> _typeString;
-	if (_typeString == "GAMING") {
-		_movie = new Movie();
-		_movie->_key = GAMING;
-		std::string _nameString = "";
-		_inputStream >> _nameString;
-		_movie->_name = _nameString;
-		GamingInput(_movie->_gamingMovie, _inputStream);
-		return _movie;
-	}
-	else if (_typeString == "CARTOON") {
-		_movie = new Movie();
-		_movie->_key = CARTOON;
-		std::string _nameString = "";
-		_inputStream >> _nameString;
-		_movie->_name = _nameString;
-		CartoonInput(_movie->_cartoonMovie, _inputStream);
-		return _movie;
-	}
-	return NULL;
-};
-
-void MovieOutput(Movie& _movie, std::ofstream& _outputStream) {
-	switch (_movie._key)
-	{
-	case CARTOON: {
-		_outputStream << "This is CARTOON movie with name " << _movie._name << " (Count of Vowels: " << _countOfVowels(_movie) << ") ";
-		CartoonOutput(_movie._cartoonMovie, _outputStream);
-		break;
-	};
-	case GAMING: {
-		_outputStream << "This is GAMING movie with name " << _movie._name << " (Count of Vowels: " << _countOfVowels(_movie) << ") ";
-		GamingOutput(_movie._gamingMovie, _outputStream);
-		break;
-	};
-	};
-	return;
-};
-
-unsigned long long int _countOfVowels(Movie _movie) {
+unsigned int Movie::countOfVowels() {
 	unsigned long long int _count = 0;
-	for (unsigned long long int i = 0; i < _movie._name.size(); i++)
-		if (_movie._name.at(i) == 'a' || _movie._name.at(i) == 'e' || _movie._name.at(i) == 'i' || _movie._name.at(i) == 'o' || _movie._name.at(i) == 'u' || _movie._name.at(i) == 'y')
+	for (unsigned long long int i = 0; i < this->_name.size(); i++)
+		if (this->_name.at(i) == 'a' || this->_name.at(i) == 'e' || this->_name.at(i) == 'i' || this->_name.at(i) == 'o' || this->_name.at(i) == 'u' || this->_name.at(i) == 'y')
 			_count++;
-		else if (_movie._name.at(i) == 'A' || _movie._name.at(i) == 'E' || _movie._name.at(i) == 'I' || _movie._name.at(i) == 'O' || _movie._name.at(i) == 'U' || _movie._name.at(i) == 'Y')
+		else if (this->_name.at(i) == 'A' || this->_name.at(i) == 'E' || this->_name.at(i) == 'I' || this->_name.at(i) == 'O' || this->_name.at(i) == 'U' || this->_name.at(i) == 'Y')
 			_count++;
 	return _count;
 };
 
-struct ContainerNode {
-	Movie* _movieData;
-	ContainerNode* _next=NULL;
-	ContainerNode* _prev=NULL;
+void Movie::input(std::ifstream& _inputStream) {
+	std::string _tempString = "";
+	_inputStream >> _tempString;
+	this->_name = _tempString;
 };
 
-ContainerNode* ContainerNodeInput (std::ifstream& _inputStream) {
-	ContainerNode* _tempNode=new ContainerNode;
-	_tempNode->_movieData = MovieInput(_inputStream);
-	_tempNode->_next = NULL;
-	_tempNode->_prev = NULL;
-	return _tempNode;
+void Movie::output(std::ofstream& _outputStream) {
+	_outputStream << this->_name << '\n';
 };
 
-void ContainerNodeOutput(ContainerNode* _tempNode, std::ofstream& _outputStream) {
-	MovieOutput(*_tempNode->_movieData, _outputStream);
+Gaming::Gaming() {
+	this->_director = NULL;
+	this->_name = "";
 };
 
-
-
-struct Container {
-	ContainerNode* _head;
-	unsigned int _containerSize;
-	ContainerNode *_dataContainer;
+Gaming::~Gaming() {
+	delete[] this->_director;
 };
 
-Container* InitializationContainer() {
-	Container* _container=new Container();
-	_container->_head = NULL;
-	_container->_containerSize = 0;
-	_container->_dataContainer = NULL;
-	return _container;
+void Gaming::input(std::ifstream& _inputStream) {
+	std::string _tempData = "";
+	_inputStream >> this->_name >> _tempData;
+	this->_director = new char[_tempData.size()+1]{'\n'};
+	strcpy(this->_director, _tempData.c_str());
 };
 
-void ContainerClear(Container *_container) {
-	_container->_containerSize = 0;
-	_container->_head = NULL;
-	_container->_dataContainer=NULL;
-	return;
+void Gaming::output(std::ofstream& _outputStream) {
+	_outputStream << "This is GAMING movie with name " << this->_name << " (Count of vowels: "<<this->countOfVowels() << ") and this director is " << this->_director << '\n';
 };
 
-bool checkSort(ContainerNode* _first, ContainerNode* _second) {
-	if (_countOfVowels(*(_first->_movieData)) < _countOfVowels(*(_second->_movieData)))
-		return true;
-	else
-		return false;
+Cartoon::Cartoon() {
+	this->_creationMethod = typeOfCartoon::animation;
+	this->_name = "";
 };
 
-void ContainerSort(Container* _container) {
-	for (ContainerNode* _current = _container->_head; (_current != _container->_head->_prev && _current != NULL); _current = _current->_next) {
-		for (ContainerNode* _currentSecond = _current; (_currentSecond != _container->_head->_prev && _currentSecond != NULL); ) {
-			_currentSecond = _currentSecond->_next;
-			if (checkSort(_current, _currentSecond)) {
-				Movie* _temp = _current->_movieData;
-				_current->_movieData = _currentSecond->_movieData;
-				_currentSecond->_movieData = _temp;
-			};
+Cartoon::~Cartoon() {
+};
+
+void Cartoon::input(std::ifstream& _inputStream) {
+	_inputStream >> this->_name;
+	std::string _inputData = "";
+	_inputStream >> _inputData;
+	if (_inputData == "anime")
+		this->_creationMethod = typeOfCartoon::anime;
+	else if (_inputData == "animation")
+		this->_creationMethod = typeOfCartoon::animation;
+	else if (_inputData == "puppets")
+		this->_creationMethod = typeOfCartoon::puppets;
+	else if (_inputData == "plasticine")
+		this->_creationMethod = typeOfCartoon::plasticine;
+	else if (_inputData == "sandy")
+		this->_creationMethod = typeOfCartoon::sandy;
+};
+
+void Cartoon::output(std::ofstream& _outputStream) {
+	_outputStream << "This is CARTOON movie with name " << this->_name << " (Count of vowels: " << this->countOfVowels() << ") and this creation method are ";
+	switch (this->_creationMethod) {
+	case typeOfCartoon::anime: {
+		_outputStream << "anime";
+		break;
+	};
+	case typeOfCartoon::animation: {
+		_outputStream << "animation";
+		break;
+	};
+	case typeOfCartoon::puppets: {
+		_outputStream << "puppets";
+		break;
+	};
+	case typeOfCartoon::plasticine: {
+		_outputStream << "plasticine";
+		break;
+	};
+	case typeOfCartoon::sandy: {
+		_outputStream << "sandy";
+		break;
+	};
+	};
+	_outputStream << '\n';
+};
+
+Container::ContainerNode::ContainerNode() {
+	this->_data = NULL;
+	this->_next = NULL;
+	this->_prev = NULL;
+};
+
+Container::ContainerNode::~ContainerNode() {
+	this->_data = NULL;
+	this->_next = NULL;
+	this->_prev = NULL;
+};
+
+Container::Container() {
+	this->_head = NULL;
+};
+
+Container::~Container() {
+	ContainerNode* _current = this->_head;
+	while (_current != NULL) {
+		if (_current->_next == NULL) {
+			_current = NULL;
+			break;
 		};
+		_current = _current->_next;
+		_current->_prev = NULL;
 	};
-
 };
 
-void ContainerInput(Container* _container, std::ifstream& _inputStream) {
-	_inputStream >> _container->_containerSize;
-	_container->_dataContainer = new ContainerNode [_container->_containerSize];
-	for (unsigned int i = 0; i < _container->_containerSize && !_inputStream.eof(); i++) {
-		_container->_dataContainer[i]=*ContainerNodeInput(_inputStream);
+void Container::input(std::ifstream& _inputStream) {
+	while (!_inputStream.eof()) {
+		this->pushback(Movie::MovieIn(_inputStream));
 	};
-	for (unsigned int i = 0; i < _container->_containerSize; i++) {
-		if (i == 0) _container->_head = &_container->_dataContainer[i];
-		_container->_dataContainer[i]._next = &(_container->_dataContainer[(i + 1) % _container->_containerSize]);
-		_container->_dataContainer[i]._prev = &(_container->_dataContainer[(i + _container->_containerSize - 1) % _container->_containerSize]);
-	};
-	return;
 };
 
-void ContainerOutput(Container* _container, std::ofstream& _outputStream) {
-	if (_container->_containerSize > 0 && _container->_head != NULL) {
-		_outputStream << "Count of movies: " << _container->_containerSize << '\n';
-		ContainerNode* _current = _container->_head;
+void Container::pushback(Movie* _inputMovie) {
+	ContainerNode* _newNode = new ContainerNode();
+	_newNode->_data = _inputMovie;
+	if (this->_head == NULL) {
+		this->_head = _newNode;
+		this->_head->_next = this->_head;
+		this->_head->_prev = this->_head;
+	}
+	else if (this->_head->_next == this->_head) {
+		_newNode->_next = this->_head;
+		this->_head->_next = _newNode;
+		_newNode->_prev = this->_head;
+		this->_head->_prev = _newNode;
+	}
+	else {
+		_newNode->_prev = this->_head->_prev;
+		this->_head->_prev->_next = _newNode;
+		this->_head->_prev = _newNode;
+		_newNode->_next = this->_head;
+	};
+};
+
+void Container::print(std::ofstream& _outputStream) {
+	unsigned long long int _count = 0;
+	ContainerNode* _current = this->_head;
+	if (_current != NULL) {
 		do {
-			ContainerNodeOutput(_current, _outputStream);
-			_outputStream << '\n';
+			_count++;
+			_current->_data->output(_outputStream);
 			_current = _current->_next;
-		} while (_current != _container->_head);
+		} while (_current != this->_head);
+		_outputStream << "Total " << _count << " movies";
 	};
-	return;
 };
+
+void Container::clear() {
+	ContainerNode* _current = this->_head;
+	while (_current != NULL) {
+		ContainerNode* _next = _current->_next;
+		_current->_data = NULL;
+		_current->_next = NULL;
+		_current->_prev = NULL;
+		_current = _next;
+	};
+	this->_head = NULL;
+};
+
+
+
+
+
 
