@@ -12,7 +12,9 @@ int main(int argc, char* argv[]) {
 	_dataContainer->input(_inputStream);
 	_inputStream.close();
 	std::cout << "Filled container.\n";
+	_dataContainer->print(_outputStream);
 	_dataContainer->sort();
+	_dataContainer->print(_outputStream);
 	std::cout << "Sorted container.\n";
 	_dataContainer->print(_outputStream);
 	_dataContainer->clear();
