@@ -13,8 +13,12 @@ public:
 	std::string _country;
 	Movie();
 	~Movie();
-	virtual void input(std::ifstream& _inputStream);
+	unsigned int countOfVowels();
+	virtual bool input(std::ifstream& _inputStream);
 	virtual void output(std::ofstream& _outputStream);
+	virtual void skipCartoon(std::ofstream& _outputStream);
+	virtual void skipGaming(std::ofstream& _outputStream);
+	virtual void skipDocument(std::ofstream& _outputStream);
 };
 
 class Gaming : public Movie {
@@ -23,8 +27,11 @@ private:
 public:
 	Gaming();
 	~Gaming();
-	void input(std::ifstream& _inputStream);
+	bool input(std::ifstream& _inputStream);
 	void output(std::ofstream& _outputStream);
+	void skipCartoon(std::ofstream& _outputStream);
+	void skipGaming(std::ofstream& _outputStream);
+	void skipDocument(std::ofstream& _outputStream);;
 };
 
 class Cartoon : public Movie {
@@ -40,14 +47,31 @@ private:
 public:
 	Cartoon();
 	~Cartoon();
-	void input(std::ifstream& _inputStream);
+	bool input(std::ifstream& _inputStream);
 	void output(std::ofstream& _outputStream);
+	void skipCartoon(std::ofstream& _outputStream);
+	void skipGaming(std::ofstream& _outputStream);
+	void skipDocument(std::ofstream& _outputStream);
+};
+
+class Document : public Movie {
+private:
+	unsigned int _year;
+public:
+	Document();
+	~Document();
+	bool input(std::ifstream& _inputStream);
+	void output(std::ofstream& _outputStream);
+	void skipCartoon(std::ofstream& _outputStream);
+	void skipGaming(std::ofstream& _outputStream);
+	void skipDocument(std::ofstream& _outputStream);
 };
 
 class Container {
 public:
 	Container();
 	~Container();
+	void sort();
 	void input(std::ifstream& _inputStream);
 	void pushback(Movie* _inputMovie);
 	void print(std::ofstream& _outputStream);
@@ -62,7 +86,9 @@ private:
 		ContainerNode* _prev;
 	};
 	ContainerNode* _head;
+	bool compare(ContainerNode* _first, ContainerNode* _second);
 };
+
 #endif // !__MODULES__
 
 
